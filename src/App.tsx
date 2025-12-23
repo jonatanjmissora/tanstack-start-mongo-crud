@@ -1,9 +1,20 @@
+import { createRouter, RouterProvider } from "@tanstack/react-router"
+import { routeTree } from "./routeTree.gen"
+
+const router = createRouter({
+  routeTree,
+})
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
 function App() {
-  
+
   return (
-    <section className="flex flex-col items-center justify-center h-screen w-screen bg-blue-900">
-      hola mundo
-    </section>
+    <RouterProvider router={router} />
   )
 }
 
