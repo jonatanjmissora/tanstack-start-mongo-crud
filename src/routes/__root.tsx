@@ -5,7 +5,7 @@ export const Route = createRootRoute({
       <header className="py-4 mx-auto max-w-8xl flex justify-center gap-16">
         <Link activeProps={{className: "text-blue-500"}} to="/">Home</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/character">Characters</Link>
-        <Link activeProps={{className: "text-blue-500"}} to="/about">About</Link>
+        <Link activeProps={{className: "text-blue-500"}} to="/search">Search</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/contact-us">Contact Us</Link>
       </header>
       <Outlet />

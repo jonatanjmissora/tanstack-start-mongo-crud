@@ -2,18 +2,17 @@ import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/character/$id')({
   component: RouteComponent,
-  loader: async ({ params }) => {
-    const data = await fetch(`https://rickandmortyapi.com/api/character/${params.id}`)
+  loader: async ({ params: {id} }) => {
+    const data = await fetch(`https://rickandmortyapi.com/api/character/${id}`)
     const character = await data.json()
     return character
   },
   pendingComponent: () => <div>Loading character...</div>,
+  errorComponent: () => <div>Character not found</div>,
 })
 
 function RouteComponent() {
 const character = Route.useLoaderData()
-
-if(character.error) return <div>Character not found</div>
 
   return (<article className="w-full h-full flex gap-4 bg-gray-600">
     
@@ -31,16 +30,17 @@ if(character.error) return <div>Character not found</div>
         {character.episode.map((episode: any) => (
             <Link 
             activeProps={{className: "text-blue-500"}}
-            to={`/character/$id/$episode.split('/').pop()`}
-            params={{id: character.id, episode: episode.id}}
+            from={`/character/$id`}
+            to={`/character/$id/${episode.split('/').pop()}`}
+            params={{episode: episode.id}}
             key={episode.split('/').pop()}
             >
-            {episode.split('/').pop()}
+            {`EP ${episode.split('/').pop()}`}
         </Link>   
-        // <span>{episode}</span>
         ))}
 </div>
         </div>
+
 
     <Outlet />
   </article>)

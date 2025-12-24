@@ -9,14 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
 import { Route as CharacterRouteImport } from './routes/character'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContactUsCountryRouteImport } from './routes/contact-us.$country'
 import { Route as CharacterIdRouteImport } from './routes/character.$id'
 import { Route as CharacterIdEpisodeRouteImport } from './routes/character.$id.$episode'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactUsRoute = ContactUsRouteImport.update({
   id: '/contact-us',
   path: '/contact-us',
@@ -25,11 +30,6 @@ const ContactUsRoute = ContactUsRouteImport.update({
 const CharacterRoute = CharacterRouteImport.update({
   id: '/character',
   path: '/character',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,18 +55,18 @@ const CharacterIdEpisodeRoute = CharacterIdEpisodeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
+  '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
+  '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
@@ -74,9 +74,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
+  '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
@@ -85,27 +85,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/character'
     | '/contact-us'
+    | '/search'
     | '/character/$id'
     | '/contact-us/$country'
     | '/character/$id/$episode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/character'
     | '/contact-us'
+    | '/search'
     | '/character/$id'
     | '/contact-us/$country'
     | '/character/$id/$episode'
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/character'
     | '/contact-us'
+    | '/search'
     | '/character/$id'
     | '/contact-us/$country'
     | '/character/$id/$episode'
@@ -113,13 +113,20 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   CharacterRoute: typeof CharacterRouteWithChildren
   ContactUsRoute: typeof ContactUsRouteWithChildren
+  SearchRoute: typeof SearchRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact-us': {
       id: '/contact-us'
       path: '/contact-us'
@@ -132,13 +139,6 @@ declare module '@tanstack/react-router' {
       path: '/character'
       fullPath: '/character'
       preLoaderRoute: typeof CharacterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -210,9 +210,9 @@ const ContactUsRouteWithChildren = ContactUsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   CharacterRoute: CharacterRouteWithChildren,
   ContactUsRoute: ContactUsRouteWithChildren,
+  SearchRoute: SearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

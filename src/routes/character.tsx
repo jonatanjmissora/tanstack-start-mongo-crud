@@ -7,6 +7,7 @@ export const Route = createFileRoute('/character')({
     return await data.json()
   },
   pendingComponent: () => <div>Loading characters...</div>,
+  errorComponent: () => <div>Error loading characters</div>,
 })
 
 function RouteComponent() {
