@@ -6,6 +6,8 @@ export const Route = createRootRoute({
         <Link activeProps={{className: "text-blue-500"}} to="/">Home</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/character">Characters</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/search">Search</Link>
+        <Link activeProps={{className: "text-blue-500"}} to="/page-with-layout">Page With Layout</Link>
+        <Link activeProps={{className: "text-blue-500"}} to="/page-without-layout">Page Without Layout</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/contact-us">Contact Us</Link>
       </header>
       <Outlet />

@@ -12,9 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ContactUsRouteImport } from './routes/contact-us'
 import { Route as CharacterRouteImport } from './routes/character'
+import { Route as PageWithLayoutRouteRouteImport } from './routes/page-with-layout/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PageWithoutLayoutIndexRouteImport } from './routes/page-without-layout/index'
 import { Route as ContactUsCountryRouteImport } from './routes/contact-us.$country'
 import { Route as CharacterIdRouteImport } from './routes/character.$id'
+import { Route as PageWithoutLayoutIdIndexRouteImport } from './routes/page-without-layout/$id/index'
+import { Route as PageWithLayoutIdIndexRouteImport } from './routes/page-with-layout/$id/index'
 import { Route as CharacterIdEpisodeRouteImport } from './routes/character.$id.$episode'
 
 const SearchRoute = SearchRouteImport.update({
@@ -32,9 +36,19 @@ const CharacterRoute = CharacterRouteImport.update({
   path: '/character',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PageWithLayoutRouteRoute = PageWithLayoutRouteRouteImport.update({
+  id: '/page-with-layout',
+  path: '/page-with-layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PageWithoutLayoutIndexRoute = PageWithoutLayoutIndexRouteImport.update({
+  id: '/page-without-layout/',
+  path: '/page-without-layout/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactUsCountryRoute = ContactUsCountryRouteImport.update({
@@ -47,6 +61,17 @@ const CharacterIdRoute = CharacterIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CharacterRoute,
 } as any)
+const PageWithoutLayoutIdIndexRoute =
+  PageWithoutLayoutIdIndexRouteImport.update({
+    id: '/page-without-layout/$id/',
+    path: '/page-without-layout/$id/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PageWithLayoutIdIndexRoute = PageWithLayoutIdIndexRouteImport.update({
+  id: '/$id/',
+  path: '/$id/',
+  getParentRoute: () => PageWithLayoutRouteRoute,
+} as any)
 const CharacterIdEpisodeRoute = CharacterIdEpisodeRouteImport.update({
   id: '/$episode',
   path: '/$episode',
@@ -55,67 +80,94 @@ const CharacterIdEpisodeRoute = CharacterIdEpisodeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/page-with-layout': typeof PageWithLayoutRouteRouteWithChildren
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
   '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
+  '/page-without-layout': typeof PageWithoutLayoutIndexRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
+  '/page-with-layout/$id': typeof PageWithLayoutIdIndexRoute
+  '/page-without-layout/$id': typeof PageWithoutLayoutIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/page-with-layout': typeof PageWithLayoutRouteRouteWithChildren
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
   '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
+  '/page-without-layout': typeof PageWithoutLayoutIndexRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
+  '/page-with-layout/$id': typeof PageWithLayoutIdIndexRoute
+  '/page-without-layout/$id': typeof PageWithoutLayoutIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/page-with-layout': typeof PageWithLayoutRouteRouteWithChildren
   '/character': typeof CharacterRouteWithChildren
   '/contact-us': typeof ContactUsRouteWithChildren
   '/search': typeof SearchRoute
   '/character/$id': typeof CharacterIdRouteWithChildren
   '/contact-us/$country': typeof ContactUsCountryRoute
+  '/page-without-layout/': typeof PageWithoutLayoutIndexRoute
   '/character/$id/$episode': typeof CharacterIdEpisodeRoute
+  '/page-with-layout/$id/': typeof PageWithLayoutIdIndexRoute
+  '/page-without-layout/$id/': typeof PageWithoutLayoutIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/page-with-layout'
     | '/character'
     | '/contact-us'
     | '/search'
     | '/character/$id'
     | '/contact-us/$country'
+    | '/page-without-layout'
     | '/character/$id/$episode'
+    | '/page-with-layout/$id'
+    | '/page-without-layout/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/page-with-layout'
     | '/character'
     | '/contact-us'
     | '/search'
     | '/character/$id'
     | '/contact-us/$country'
+    | '/page-without-layout'
     | '/character/$id/$episode'
+    | '/page-with-layout/$id'
+    | '/page-without-layout/$id'
   id:
     | '__root__'
     | '/'
+    | '/page-with-layout'
     | '/character'
     | '/contact-us'
     | '/search'
     | '/character/$id'
     | '/contact-us/$country'
+    | '/page-without-layout/'
     | '/character/$id/$episode'
+    | '/page-with-layout/$id/'
+    | '/page-without-layout/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PageWithLayoutRouteRoute: typeof PageWithLayoutRouteRouteWithChildren
   CharacterRoute: typeof CharacterRouteWithChildren
   ContactUsRoute: typeof ContactUsRouteWithChildren
   SearchRoute: typeof SearchRoute
+  PageWithoutLayoutIndexRoute: typeof PageWithoutLayoutIndexRoute
+  PageWithoutLayoutIdIndexRoute: typeof PageWithoutLayoutIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -141,11 +193,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CharacterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/page-with-layout': {
+      id: '/page-with-layout'
+      path: '/page-with-layout'
+      fullPath: '/page-with-layout'
+      preLoaderRoute: typeof PageWithLayoutRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/page-without-layout/': {
+      id: '/page-without-layout/'
+      path: '/page-without-layout'
+      fullPath: '/page-without-layout'
+      preLoaderRoute: typeof PageWithoutLayoutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact-us/$country': {
@@ -162,6 +228,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CharacterIdRouteImport
       parentRoute: typeof CharacterRoute
     }
+    '/page-without-layout/$id/': {
+      id: '/page-without-layout/$id/'
+      path: '/page-without-layout/$id'
+      fullPath: '/page-without-layout/$id'
+      preLoaderRoute: typeof PageWithoutLayoutIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/page-with-layout/$id/': {
+      id: '/page-with-layout/$id/'
+      path: '/$id'
+      fullPath: '/page-with-layout/$id'
+      preLoaderRoute: typeof PageWithLayoutIdIndexRouteImport
+      parentRoute: typeof PageWithLayoutRouteRoute
+    }
     '/character/$id/$episode': {
       id: '/character/$id/$episode'
       path: '/$episode'
@@ -171,6 +251,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface PageWithLayoutRouteRouteChildren {
+  PageWithLayoutIdIndexRoute: typeof PageWithLayoutIdIndexRoute
+}
+
+const PageWithLayoutRouteRouteChildren: PageWithLayoutRouteRouteChildren = {
+  PageWithLayoutIdIndexRoute: PageWithLayoutIdIndexRoute,
+}
+
+const PageWithLayoutRouteRouteWithChildren =
+  PageWithLayoutRouteRoute._addFileChildren(PageWithLayoutRouteRouteChildren)
 
 interface CharacterIdRouteChildren {
   CharacterIdEpisodeRoute: typeof CharacterIdEpisodeRoute
@@ -210,9 +301,12 @@ const ContactUsRouteWithChildren = ContactUsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PageWithLayoutRouteRoute: PageWithLayoutRouteRouteWithChildren,
   CharacterRoute: CharacterRouteWithChildren,
   ContactUsRoute: ContactUsRouteWithChildren,
   SearchRoute: SearchRoute,
+  PageWithoutLayoutIndexRoute: PageWithoutLayoutIndexRoute,
+  PageWithoutLayoutIdIndexRoute: PageWithoutLayoutIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
