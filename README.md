@@ -83,3 +83,171 @@ function RootComponent() {
     </React.Fragment>
   )
 }
+
+================================================================================
+================================================================================
+creamos una ruta anidada
+src/routes/character.tsx
+           character.$id.tsx
+           character.$id.episode.tsx
+
+           o
+           
+src/routes/character
+                    route.tsx
+                    /$id
+                        route.tsx
+                        /$episode
+                            route.tsx 
+================================================================================
+================================================================================
+
+1 - creamos src/routes/character/route.tsx
+--------------------------------------------------------------------
+
+export const Route = createFileRoute('/character')({
+  component: RouteComponent,
+  loader: async () => retornamos los datos de la api ,
+  pendingComponent: () => <div>Loading characters...</div>,
+  errorComponent: () => <div>Error loading characters</div>,
+})
+
+function RouteComponent() {
+const {characters} = Route.useLoaderData()
+return (
+  ...
+
+  {characters.map((character: any) => (
+    <Link 
+        activeProps={{className: "text-blue-500"}}
+        to={`/character/$id`}
+        params={{id: character.id}}
+        key={character.id}
+        >
+          {character.name}
+      </Link>
+  ))}
+  <Outlet />
+  ...
+)
+}
+
+2 - creamos src/routes/character/$id/route.tsx
+--------------------------------------------------------------------
+
+export const Route = createFileRoute('/character/$id')({
+  component: RouteComponent,
+  loader: async ({ params: {id} }) => retornamos los datos de la api segun el id,
+  pendingComponent: () => <div>Loading character...</div>,
+  errorComponent: () => <div>Character not found</div>,
+})
+
+function RouteComponent() {
+const character = Route.useLoaderData()
+return (
+  {character.episode.map((episode: any) => (
+            <Link 
+            activeProps={{className: "text-blue-500"}}
+            from={`/character/$id`}
+            to={`/character/$id/${episodeId}`}
+            params={{episodeId: episode.id}}
+            key={episodeId}
+            >
+            {`EP ${episodeId}`}
+        </Link>   
+        ))}
+  ...
+  <Outlet />
+  ...
+)
+
+3 - creamos src/routes/character/$id/$episodeId/route.tsx
+--------------------------------------------------------------------
+
+export const Route = createFileRoute('/character/$id/$episode')({
+  component: RouteComponent,
+  loader: async ({ params: {episode} }) => retornamos los datos de la api segun el episodeId,
+  pendingComponent: () => <div>Loading episode...</div>,
+  errorComponent: () => <div>Episode not found</div>,
+})
+
+function RouteComponent() {
+  const episode = Route.useLoaderData()
+  return <CharactersByEpisode characters={episode.characters}/>
+}
+
+================================================================================
+================================================================================
+veamos el search
+================================================================================
+================================================================================
+
+1 - creamos un searchSchema en src/lib/types.ts
+--------------------------------------------------------------------
+
+import { z } from "zod";
+
+export const searchSchema = z.object({
+    page: z.number().min(1).default(1).catch(1),
+    filter: z.string().default("").catch(""),
+    sort: z.enum(["asc", "desc"]).default("asc").catch("asc"),
+});
+
+export type SearchParams = z.infer<typeof searchSchema>
+
+2 - creamos src/routes/search.tsx
+--------------------------------------------------------------------
+
+export const Route = createFileRoute('/search')({
+  component: RouteComponent,
+  validateSearch: searchSchema,
+  loaderDeps: ({search}) => ({search}),
+  loader: async ({ deps: {search} }) => {
+    const filteredElectrodomesticos = await searchElectrodomesticos(search)
+    const allElectrodomesticos = await getAllElectrodomesticos()
+    return {allElectrodomesticos, filteredElectrodomesticos}
+  },
+  errorComponent: ErrorComponent,
+  pendingComponent: () => <div>Loading</div>,
+})
+
+function RouteComponent() {
+
+  const { allElectrodomesticos, filteredElectrodomesticos } = Route.useLoaderData()
+  const {page} = Route.useSearch()
+
+  return (
+    <FilterInputs />
+    <Electrodomesticos electrodomesticos={filteredElectrodomesticos} page={page}/>
+  )
+
+  3 - creamos src/components/filter-inputs.tsx
+--------------------------------------------------------------------
+const seachRouteApi = getRouteApi("/search")
+
+export function FilterInputs() {
+
+  const { page, filter, sort} = seachRouteApi.useSearch()
+
+  const [inputPage, setInputPage] = useState<number>(page)
+  const [inputFilter, setInputFilter] = useState<string>(filter)
+  const [inputSort, setInputSort] = useState<"asc" | "desc">(sort)
+
+  const getSearchParams = (updates: Partial<SearchParams>) => {
+    return {
+      page: updates.page !== undefined ? updates.page : page,
+      filter: updates.filter !== undefined ? updates.filter : filter,
+      sort: updates.sort !== undefined ? updates.sort : sort,
+    }
+  }
+
+  return (
+    ...
+    <div >
+      <label htmlFor="page">page: </label>
+      <input type="text" name="page" value={inputPage} onChange={(e) => setInputPage(parseInt(e.target.value, 10))}/>
+      <Link to={"/search"} search={getSearchParams({page: inputPage})} >Apply</Link>
+    </div>
+    ...
+  )
+}
