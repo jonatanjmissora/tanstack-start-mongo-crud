@@ -15,6 +15,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         <Link activeProps={{className: "text-blue-500"}} to="/search">Search</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/page-with-layout">Page With Layout</Link>
         <Link activeProps={{className: "text-blue-500"}} to="/page-without-layout">Page Without Layout</Link>
+        <Link activeProps={{className: "text-blue-500"}} to="/login">Login</Link>
       </header>
       <Outlet />
     </section>
