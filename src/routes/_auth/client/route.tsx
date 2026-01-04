@@ -10,5 +10,5 @@ export const Route = createFileRoute('/_auth/client')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_auth/client"! <Outlet /></div>
+  return <div><span className="text-2xl font-bold mb-4">CLIENT PAGE</span> <Outlet /></div>
 }

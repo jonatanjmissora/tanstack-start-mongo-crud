@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 
 export type UserRole = "admin" | "client" | null;
 export type RouterContext = {
@@ -25,11 +26,15 @@ useEffect(() => {
   }, [role]);
 
   const login = (newRole: "admin" | "client") => {
+    flushSync(() => {
       setRole(newRole);
+    });
   };
 
   const logout = () => {
+    flushSync(() => {
       setRole(null);
+    });
   };
 
   const isAdmin = role === "admin";

@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import z from "zod";
+import { useRouterContext } from "../lib/use-router-context";
 
 const loginSchema = z.object({
   redirect: z.string().default("/"),
@@ -9,11 +10,11 @@ const loginSchema = z.object({
 export const Route = createFileRoute("/login")({
   component: RouteComponent,
   validateSearch: loginSchema,
-  beforeLoad: async ({ context, search }) => {
+  beforeLoad: async ({ context }) => {
     const { isAdmin, isAuthenticated } = context;
     if (isAuthenticated) {
       throw redirect({
-        to: search.redirect || (isAdmin ? "/admin" : "/client"),
+        to: (isAdmin ? "/admin" : "/client"),
       });
     }
   },
@@ -21,15 +22,15 @@ export const Route = createFileRoute("/login")({
 });
 
 function RouteComponent() {
-  const { login } = Route.useRouteContext();
   const router = useRouter();
+  const { login } = useRouterContext();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const [username, setUsername] = useState("");
   return (
-    <article className="flex-1 w-full flex justify-center p-10">
+    <article className="flex-1 w-full flex items-center flex-col gap-10 p-10">
     <form className="flex flex-col gap-8">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
+      <span className="text-2xl font-bold mb-4">LOGIN PAGE</span>
       <input
         className="p-2"
         type="text"
@@ -49,7 +50,7 @@ function RouteComponent() {
             login("client");
           }
           router.invalidate();
-          router.navigate({ reloadDocument: true });
+          // router.navigate({ reloadDocument: true });
           navigate({ to: search.redirect });
         }}
       >
@@ -58,6 +59,7 @@ function RouteComponent() {
 
       <p className="text-sm text-gray-600">Use "admin" or whatever for "client"</p>
     </form>
+
     </article>
   );
 }

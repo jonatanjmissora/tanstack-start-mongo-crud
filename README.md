@@ -347,3 +347,83 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 ...
+
+================================================================================
+================================================================================
+RUTAS PROTEGIDAS
+================================================================================
+================================================================================
+
+1 - En el context, tengo las funciones de login y logout, 
+ademas de las constantes de autenticacion.
+
+2 - En /login.tsx
+------------------------------------------
+
+export const Route = createFileRoute("/login")({
+  component: RouteComponent,
+  validateSearch: loginSchema,
+  beforeLoad: async ({ context }) => {
+    const { isAdmin, isAuthenticated } = context;
+    if (isAuthenticated) {
+      throw redirect({
+        to: (isAdmin ? "/admin" : "/client"),
+      });
+    }
+  },
+  pendingComponent: () => <div>Loading...</div>,
+});
+
+function RouteComponent() {
+  const router = useRouter();
+  const { login } = useRouterContext();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  return (
+    <>
+    ...
+      <button
+        className="button"
+        type="submit"
+        onClick={() => {
+          if (username === "admin") {
+            login("admin");
+          } else {
+            login("client");
+          }
+          router.invalidate();
+          // router.navigate({ reloadDocument: true });
+          navigate({ to: search.redirect });
+        }}
+      >
+        Login
+      </button>
+      ...
+    </>
+  );
+}
+
+3 - En /_auth/route.tsx
+------------------------------------------
+export const Route = createFileRoute('/_auth')({
+  component: RouteComponent,
+  beforeLoad: ({ context, location }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      })
+    }
+  }
+})
+
+function RouteComponent() {
+  return <Outlet />
+}
+
+
+4 - En /_auth/client/route.tsx (ruta protegida para clientes)
+    En /_auth/admin/route.tsx (ruta protegida para clientes)
+------------------------------------------
