@@ -251,3 +251,99 @@ export function FilterInputs() {
     ...
   )
 }
+
+================================================================================
+================================================================================
+CONTEXT
+================================================================================
+================================================================================
+
+1 - Router context setup
+---------------------------
+export type UserRole = "admin" | "client" | null;
+export type RouterContext = {
+  role: UserRole;
+  login: (role: "admin" | "client") => void;
+  logout: () => void;
+  isAdmin: boolean;
+  isClient: boolean;
+  isAuthenticated: boolean;
+};
+
+export function useRouterContext(): RouterContext {
+  const [role, setRole] = useState<UserRole>(() => {
+    const savedRole = localStorage.getItem("userRole") as UserRole | null;
+    return savedRole ?? null;
+  });
+
+useEffect(() => {
+    if (role !== null) {
+      localStorage.setItem("userRole", role);
+    } else {
+      localStorage.removeItem("userRole");
+    }
+  }, [role]);
+
+  const login = (newRole: "admin" | "client") => {
+    setRole(newRole);
+  };
+
+  const logout = () => {
+    setRole(null);
+  };
+
+  const isAdmin = role === "admin";
+  const isClient = role === "client";
+  const isAuthenticated = !!role;
+
+  return {
+    role,
+    login,
+    logout,
+    isAdmin,
+    isClient,
+    isAuthenticated,
+  };
+}
+
+2- App.tsx
+---------------------------
+...
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  defaultStaleTime: 5000,
+  scrollRestoration: true,
+  context: {
+    role: null,
+    login: () => {},
+    logout: () => {},
+    isAdmin: false,
+    isClient: false,
+    isAuthenticated: false,
+  },
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+function App() {
+
+  const routerContext = useRouterContext();
+  return (
+    <RouterProvider router={router} context={routerContext} />
+  )
+}
+
+export default App
+
+3 - en _root
+---------------------------
+...
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: RootComponent,
+});
+...

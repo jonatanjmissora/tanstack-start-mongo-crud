@@ -25,11 +25,11 @@ useEffect(() => {
   }, [role]);
 
   const login = (newRole: "admin" | "client") => {
-    setRole(newRole);
+      setRole(newRole);
   };
 
   const logout = () => {
-    setRole(null);
+      setRole(null);
   };
 
   const isAdmin = role === "admin";
