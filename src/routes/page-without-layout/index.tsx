@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/page-without-layout/')({
   component: RouteComponent,
@@ -15,6 +15,5 @@ function RouteComponent() {
           <Link activeProps={{className: "text-blue-700"}} to={`/page-without-layout/$id`} params={{id: "java"}}>Java</Link>
           <Link activeProps={{className: "text-blue-700"}} to={`/page-without-layout/$id`} params={{id: "python"}}>Python</Link>
         </div> 
-    <Outlet />
   </div>)
 }
