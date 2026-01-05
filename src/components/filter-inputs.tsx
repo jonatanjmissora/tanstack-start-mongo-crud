@@ -2,11 +2,11 @@ import { getRouteApi, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import type { SearchParams } from "../lib/types";
 
-const seachRouteApi = getRouteApi("/search")
+const searchRouteApi = getRouteApi("/search")
 
 export function FilterInputs() {
 
-  const { page, filter, sort} = seachRouteApi.useSearch()
+  const { page, filter, sort} = searchRouteApi.useSearch()
 
   const [inputPage, setInputPage] = useState<number>(page)
   const [inputFilter, setInputFilter] = useState<string>(filter)
