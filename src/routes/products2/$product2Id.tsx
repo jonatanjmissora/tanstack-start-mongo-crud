@@ -23,7 +23,7 @@ function RouteComponent() {
 
 	return (
 		<article className="p-10 flex flex-col gap-20  items-center">
-			<Link to="/products" className="text-lg underline font-bold mr-auto">
+			<Link to="/products2" className="text-lg underline font-bold mr-auto">
 				Volver
 			</Link>
 			<div className={`flex  gap-2 rounded-lg bg-blue-800 p-2 w-1/2 shadow-lg`}>
