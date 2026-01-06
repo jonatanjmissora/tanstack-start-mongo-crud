@@ -7,3 +7,12 @@ export const searchSchema = z.object({
 })
 
 export type SearchParams = z.infer<typeof searchSchema>
+
+export type ProductType = {
+	id: number
+	title: string
+	price: number
+	description: string
+	category: string
+	image: string
+}
