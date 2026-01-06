@@ -3,6 +3,7 @@ import { routeTree } from "./routeTree.gen"
 
 const router = createRouter({
 	routeTree,
+	defaultPendingMs: 0,
 	defaultPreload: "intent",
 })
 
