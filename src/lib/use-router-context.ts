@@ -1,52 +1,52 @@
-import { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useState } from "react"
+import { flushSync } from "react-dom"
 
-export type UserRole = "admin" | "client" | null;
+export type UserRole = "admin" | "client" | null
 export type RouterContext = {
-  role: UserRole;
-  login: (role: "admin" | "client") => void;
-  logout: () => void;
-  isAdmin: boolean;
-  isClient: boolean;
-  isAuthenticated: boolean;
-};
+	role: UserRole
+	login: (role: "admin" | "client") => void
+	logout: () => void
+	isAdmin: boolean
+	isClient: boolean
+	isAuthenticated: boolean
+}
 
 export function useRouterContext(): RouterContext {
-  const [role, setRole] = useState<UserRole>(() => {
-    const savedRole = localStorage.getItem("userRole") as UserRole | null;
-    return savedRole ?? null;
-  });
+	const [role, setRole] = useState<UserRole>(() => {
+		const savedRole = localStorage.getItem("userRole") as UserRole | null
+		return savedRole ?? null
+	})
 
-useEffect(() => {
-    if (role !== null) {
-      localStorage.setItem("userRole", role);
-    } else {
-      localStorage.removeItem("userRole");
-    }
-  }, [role]);
+	useEffect(() => {
+		if (role !== null) {
+			localStorage.setItem("userRole", role)
+		} else {
+			localStorage.removeItem("userRole")
+		}
+	}, [role])
 
-  const login = (newRole: "admin" | "client") => {
-    flushSync(() => {
-      setRole(newRole);
-    });
-  };
+	const login = (newRole: "admin" | "client") => {
+		flushSync(() => {
+			setRole(newRole)
+		})
+	}
 
-  const logout = () => {
-    flushSync(() => {
-      setRole(null);
-    });
-  };
+	const logout = () => {
+		flushSync(() => {
+			setRole(null)
+		})
+	}
 
-  const isAdmin = role === "admin";
-  const isClient = role === "client";
-  const isAuthenticated = !!role;
+	const isAdmin = role === "admin"
+	const isClient = role === "client"
+	const isAuthenticated = !!role
 
-  return {
-    role,
-    login,
-    logout,
-    isAdmin,
-    isClient,
-    isAuthenticated,
-  };
+	return {
+		role,
+		login,
+		logout,
+		isAdmin,
+		isClient,
+		isAuthenticated,
+	}
 }
