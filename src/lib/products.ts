@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { queryOptions, useQuery } from "@tanstack/react-query"
 import type { ProductType } from "./types"
 
 export const getProducts = async () => {
@@ -19,7 +19,22 @@ export const productsQueryOptions = queryOptions({
 })
 
 export const productQueryOptions = (productId: string) =>
-  queryOptions({
-    queryKey: ['product', { productId }],
-    queryFn: () => getProduct(productId),
+	queryOptions({
+		queryKey: ['product', { productId }],
+		queryFn: () => getProduct(productId),
+	})
+	
+export const useFilteredProducts = (q?: string) => {
+	return useQuery({
+    ...productsQueryOptions,
+    select: (products) => {
+      if (!q) return products
+
+      const normalized = q.toLowerCase()
+
+      return products.filter((p) =>
+        p.title.toLowerCase().includes(normalized)
+      )
+    },
   })
+}

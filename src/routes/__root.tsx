@@ -6,11 +6,15 @@ import {
 	Outlet,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import ErrorComponent from "../components/Error"
+import Loading from "../components/Loading"
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient
 }>()({
 	component: RootComponent,
+	errorComponent: () => <ErrorComponent />,
+	pendingComponent: () => <Loading />,
 })
 
 function RootComponent() {
@@ -20,11 +24,8 @@ function RootComponent() {
 				<Link activeProps={{ className: "text-blue-500" }} to="/">
 					Home
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/fake-api">
-					Fake API
-				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/tanstack-query/products">
-					Tanstack Query
+				<Link activeProps={{ className: "text-blue-500" }} to="/products">
+					Products
 				</Link>
 			</header>
 			<Outlet />
@@ -33,3 +34,4 @@ function RootComponent() {
 		</section>
 	)
 }
+
