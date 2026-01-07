@@ -1,29 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import type { ProductType } from '../../lib/types'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { productQueryOptions } from '../../lib/products'
 
-export const Route = createFileRoute('/tanstack-query/$productId')({
+export const Route = createFileRoute('/tanstack-query/products/$productId')({
  component: RouteComponent,
-	loader: async ({ params }) => {
-		const allProducts = await fetch(`https://fakestoreapi.com/products`)
-		const products = (await allProducts.json()) as ProductType[]
-		const product = products.find(
-			(product: ProductType) => product.id === Number(params.productId)
-		)
-		if (!product) {
-			throw new Error("Product not found")
-		}
-		return product
-	},
-	pendingComponent: () => <div>Loading products...</div>,
-	errorComponent: () => <div>Error loading productos</div>,
 })
 
 function RouteComponent() {
-	const product = Route.useLoaderData()
+	const { productId } = Route.useParams()
+  const productQuery = useSuspenseQuery(productQueryOptions(productId))
+  const product = productQuery.data
 	return (
 		<article className="p-10 flex flex-col gap-20  items-center">
 			<Link
-				to="/tanstack-query"
+				to="/tanstack-query/products"
 				className="text-lg underline font-bold mr-auto"
 			>
 				Volver

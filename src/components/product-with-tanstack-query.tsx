@@ -9,7 +9,7 @@ export function ProductWithTanStackQuery({ product }: ProductProps) {
 	return (
 		<Link
 			key={product.id}
-			to={`/tanstack-query/$productId`}
+			to={`/tanstack-query/products/$productId`}
 			params={{ productId: product.id.toString() }}
 			className={`flex flex-col gap-2 rounded-lg bg-blue-800 p-2 flex-1 min-w-64 shadow-lg`}
 		>

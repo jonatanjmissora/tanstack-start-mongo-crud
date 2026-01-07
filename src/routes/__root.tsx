@@ -23,7 +23,7 @@ function RootComponent() {
 				<Link activeProps={{ className: "text-blue-500" }} to="/fake-api">
 					Fake API
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/tanstack-query">
+				<Link activeProps={{ className: "text-blue-500" }} to="/tanstack-query/products">
 					Tanstack Query
 				</Link>
 			</header>
