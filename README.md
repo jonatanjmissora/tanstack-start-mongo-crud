@@ -41,213 +41,120 @@ autoCodeSplitting: true,
 
 7 - App.tsx
 ========
-import { createRouter, RouterProvider } from "@tanstack/react-router"
-import { routeTree } from "./routeTree.gen"
+const queryClient = new QueryClient()
 
 const router = createRouter({
-  routeTree,
+	routeTree,
+	defaultPendingMs: 0,
+	defaultPreload: "intent",
+	defaultPreloadStaleTime: 0,
+	context: {
+		queryClient,
+	},
 })
 
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router
+	}
 }
 
 function App() {
-
-  return (
-    <RouterProvider router={router} />
-  )
+	return (
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+		</QueryClientProvider>
+	)
 }
-
-export default App
 
 8 - creo src/routes/__root.tsx
 ====================
-import * as React from 'react'
-import { Link, Outlet, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  component: RootComponent,
+export const Route = createRootRouteWithContext<{
+	queryClient: QueryClient
+}>()({
+	component: RootComponent,
 })
 
 function RootComponent() {
-  return (
-    <React.Fragment>
-      <div className="container mx-auto max-w-8xl py-4 flex justify-center items-center gap-6">
-        <Link activeProps={{ className: 'text-blue-500' }} to="/">Home</Link>
-        <Link activeProps={{ className: 'text-blue-500' }} to="/about">About</Link>
-      </div>
-      <Outlet />
-    </React.Fragment>
+	return (
+    ---
   )
 }
 
-================================================================================
-================================================================================
-creamos una ruta anidada
-src/routes/character.tsx
-           character.$id.tsx
-           character.$id.episode.tsx
-
-           o
-           
-src/routes/character
-                    route.tsx
-                    /$id
-                        route.tsx
-                        /$episode
-                            route.tsx 
-================================================================================
-================================================================================
-
-1 - creamos src/routes/character/route.tsx
---------------------------------------------------------------------
-
-export const Route = createFileRoute('/character')({
-  component: RouteComponent,
-  loader: async () => retornamos los datos de la api ,
-  pendingComponent: () => <div>Loading characters...</div>,
-  errorComponent: () => <div>Error loading characters</div>,
+9 En Fake Api
+----------------------------------
+export const Route = createFileRoute("/fake-api")({
+	component: RouteComponent,
+	loader: async () => {
+		const products = await getProducts()
+		return { products }
+	},
+	pendingComponent: () => <Loading />,
+	errorComponent: () => <ErrorComponent />,
 })
 
-function RouteComponent() {
-const {characters} = Route.useLoaderData()
-return (
-  ...
+10 pero con Tanstack Query
+=========================
 
-  {characters.map((character: any) => (
-    <Link 
-        activeProps={{className: "text-blue-500"}}
-        to={`/character/$id`}
-        params={{id: character.id}}
-        key={character.id}
-        >
-          {character.name}
-      </Link>
-  ))}
-  <Outlet />
-  ...
-)
+en routes/tanstack-query/index.tsx
+---------------------------------------
+export const Route = createFileRoute('/tanstack-query/')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(productsQueryOptions),
+  component: () => import("./products.lazy").then(d => d.Route)
+})
+
+en lib/products.ts
+-------------------
+export const getProducts = async () => {
+	const response = await fetch("https://fakestoreapi.com/products")
+	const data = await response.json()
+	return data as ProductType[]
 }
 
-2 - creamos src/routes/character/$id/route.tsx
---------------------------------------------------------------------
-
-export const Route = createFileRoute('/character/$id')({
-  component: RouteComponent,
-  loader: async ({ params: {id} }) => retornamos los datos de la api segun el id,
-  pendingComponent: () => <div>Loading character...</div>,
-  errorComponent: () => <div>Character not found</div>,
-})
-
-function RouteComponent() {
-const character = Route.useLoaderData()
-return (
-  {character.episode.map((episode: any) => (
-            <Link 
-            activeProps={{className: "text-blue-500"}}
-            from={`/character/$id`}
-            to={`/character/$id/${episodeId}`}
-            params={{episodeId: episode.id}}
-            key={episodeId}
-            >
-            {`EP ${episodeId}`}
-        </Link>   
-        ))}
-  ...
-  <Outlet />
-  ...
-)
-
-3 - creamos src/routes/character/$id/$episodeId/route.tsx
---------------------------------------------------------------------
-
-export const Route = createFileRoute('/character/$id/$episode')({
-  component: RouteComponent,
-  loader: async ({ params: {episode} }) => retornamos los datos de la api segun el episodeId,
-  pendingComponent: () => <div>Loading episode...</div>,
-  errorComponent: () => <div>Episode not found</div>,
-})
-
-function RouteComponent() {
-  const episode = Route.useLoaderData()
-  return <CharactersByEpisode characters={episode.characters}/>
+export const getProduct = async (productId: string) => {
+	const response = await fetch(`https://fakestoreapi.com/products/${productId}`)
+	const data = await response.json()
+	return data as ProductType
 }
 
-================================================================================
-================================================================================
-veamos el search
-================================================================================
-================================================================================
+export const productsQueryOptions = queryOptions({
+	queryKey: ["products"],
+	queryFn: () => getProducts(),
+})
 
-1 - creamos un searchSchema en src/lib/types.ts
---------------------------------------------------------------------
+export const productQueryOptions = (productId: string) =>
+  queryOptions({
+    queryKey: ['product', { productId }],
+    queryFn: () => getProduct(productId),
+  })
 
-import { z } from "zod";
-
-export const searchSchema = z.object({
-    page: z.number().min(1).default(1).catch(1),
-    filter: z.string().default("").catch(""),
-    sort: z.enum(["asc", "desc"]).default("asc").catch("asc"),
-});
-
-export type SearchParams = z.infer<typeof searchSchema>
-
-2 - creamos src/routes/search.tsx
---------------------------------------------------------------------
-
-export const Route = createFileRoute('/search')({
-  component: RouteComponent,
-  validateSearch: searchSchema,
-  loaderDeps: ({search}) => ({search}),
-  loader: async ({ deps: {search} }) => {
-    const filteredElectrodomesticos = await searchElectrodomesticos(search)
-    const allElectrodomesticos = await getAllElectrodomesticos()
-    return {allElectrodomesticos, filteredElectrodomesticos}
-  },
-  errorComponent: ErrorComponent,
-  pendingComponent: () => <div>Loading</div>,
+en routes/tanstack-query/products.lazy.tsx
+------------------------------------------
+export const Route = createLazyFileRoute("/tanstack-query/products")({
+	component: RouteComponent,
 })
 
 function RouteComponent() {
+	const productsQuery = useSuspenseQuery(productsQueryOptions)
+	const products = productsQuery.data
 
-  const { allElectrodomesticos, filteredElectrodomesticos } = Route.useLoaderData()
-  const {page} = Route.useSearch()
-
-  return (
-    <FilterInputs />
-    <Electrodomesticos electrodomesticos={filteredElectrodomesticos} page={page}/>
+	return (
+    ---
   )
+}
 
-  3 - creamos src/components/filter-inputs.tsx
---------------------------------------------------------------------
-const seachRouteApi = getRouteApi("/search")
+en src/routes/tanstack-query/products.l$productId$.tsx
+------------------------------------------
+export const Route = createFileRoute('/tanstack-query/products/$productId')({
+ component: RouteComponent,
+})
 
-export function FilterInputs() {
-
-  const { page, filter, sort} = seachRouteApi.useSearch()
-
-  const [inputPage, setInputPage] = useState<number>(page)
-  const [inputFilter, setInputFilter] = useState<string>(filter)
-  const [inputSort, setInputSort] = useState<"asc" | "desc">(sort)
-
-  const getSearchParams = (updates: Partial<SearchParams>) => {
-    return {
-      page: updates.page !== undefined ? updates.page : page,
-      filter: updates.filter !== undefined ? updates.filter : filter,
-      sort: updates.sort !== undefined ? updates.sort : sort,
-    }
-  }
-
-  return (
-    ...
-    <div >
-      <label htmlFor="page">page: </label>
-      <input type="text" name="page" value={inputPage} onChange={(e) => setInputPage(parseInt(e.target.value, 10))}/>
-      <Link to={"/search"} search={getSearchParams({page: inputPage})} >Apply</Link>
-    </div>
-    ...
+function RouteComponent() {
+	const { productId } = Route.useParams()
+  const productQuery = useSuspenseQuery(productQueryOptions(productId))
+  const product = productQuery.data
+	return (
+    ---
   )
 }
