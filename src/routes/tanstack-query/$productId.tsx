@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import type { ProductType } from "../../lib/types"
+import { createFileRoute, Link } from '@tanstack/react-router'
+import type { ProductType } from '../../lib/types'
 
-export const Route = createFileRoute("/tanstack-query/$productId")({
-	component: RouteComponent,
+export const Route = createFileRoute('/tanstack-query/$productId')({
+ component: RouteComponent,
 	loader: async ({ params }) => {
 		const allProducts = await fetch(`https://fakestoreapi.com/products`)
 		const products = (await allProducts.json()) as ProductType[]
