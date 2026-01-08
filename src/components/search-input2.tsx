@@ -23,9 +23,7 @@ function SearchInput2() {
 			/>
 			<button
 				className="button"
-				onClick={() =>
-					navigate({ to: "/products", replace: true, search: { q: undefined } })
-				}
+				onClick={() => navigate({ replace: true, search: { q: undefined } })}
 			>
 				Clear
 			</button>
