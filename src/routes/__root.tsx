@@ -27,6 +27,9 @@ function RootComponent() {
 				<Link activeProps={{ className: "text-blue-500" }} to="/products">
 					Products
 				</Link>
+				<Link activeProps={{ className: "text-blue-500" }} to="/products2">
+					Products2
+				</Link>
 			</header>
 			<Outlet />
 			<TanStackRouterDevtools />
@@ -34,4 +37,3 @@ function RootComponent() {
 		</section>
 	)
 }
-
