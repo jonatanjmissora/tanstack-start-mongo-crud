@@ -13,7 +13,7 @@ export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient
 }>()({
 	component: RootComponent,
-	errorComponent: () => <ErrorComponent />,
+	errorComponent: ({ error }) => <ErrorComponent error={error} />,
 	pendingComponent: () => <Loading />,
 })
 
@@ -29,6 +29,15 @@ function RootComponent() {
 				</Link>
 				<Link activeProps={{ className: "text-blue-500" }} to="/products2">
 					Products2
+				</Link>
+				<Link activeProps={{ className: "text-blue-500" }} to="/products3">
+					Products3
+				</Link>
+				<Link activeProps={{ className: "text-blue-500" }} to="/products4">
+					Products4
+				</Link>
+				<Link activeProps={{ className: "text-blue-500" }} to="/products5">
+					Products5
 				</Link>
 			</header>
 			<Outlet />

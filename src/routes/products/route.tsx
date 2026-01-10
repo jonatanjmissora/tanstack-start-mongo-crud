@@ -16,8 +16,6 @@ function RouteComponent() {
 	const { q } = Route.useSearch()
 	const { data: products, isLoading } = useFilteredProducts(q)
 
-	if (isLoading) return <div>Cargando...</div>
-
 	return (
 		<article className="w-full flex-1 flex">
 			<aside className="w-1/3 flex flex-col gap-4 p-10">
@@ -29,6 +27,7 @@ function RouteComponent() {
 					Productos ({products?.length || 0})
 				</h2>
 				<SearchInput />
+				{isLoading && <div>Cargando del useQuery...</div>}
 				<ul className="flex flex-col gap-2">
 					{products?.map(p => (
 						<Link
@@ -36,6 +35,7 @@ function RouteComponent() {
 							to={`/products/$productId`}
 							params={{ productId: String(p.id) }}
 							className="truncate"
+							activeProps={{ className: "bg-blue-500" }}
 						>
 							{p.title}
 						</Link>

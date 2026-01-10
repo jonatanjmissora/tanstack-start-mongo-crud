@@ -13,3 +13,7 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 
 	return debounced
 }
+
+export const delay = () => {
+	return new Promise(resolve => setTimeout(resolve, 3000))
+}
