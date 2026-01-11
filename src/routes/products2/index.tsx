@@ -31,6 +31,7 @@ function RouteComponent() {
 							key={p.id}
 							to={`/products2/$productId`}
 							params={{ productId: String(p.id) }}
+							search={{ q }}
 							className="truncate"
 						>
 							{p.title}

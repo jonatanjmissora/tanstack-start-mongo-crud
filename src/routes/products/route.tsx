@@ -34,6 +34,7 @@ function RouteComponent() {
 							key={p.id}
 							to={`/products/$productId`}
 							params={{ productId: String(p.id) }}
+							search={{ q }}
 							className="truncate"
 							activeProps={{ className: "bg-blue-500" }}
 						>

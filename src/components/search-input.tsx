@@ -7,7 +7,6 @@ function SearchInput() {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const q = e.target.value.trim() === "" ? undefined : e.target.value
 		navigate({
-			to: "/products",
 			replace: true,
 			search: prev => ({ ...prev, q }),
 		})
