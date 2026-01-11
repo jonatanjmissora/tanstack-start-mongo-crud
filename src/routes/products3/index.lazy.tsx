@@ -3,6 +3,7 @@ import { createLazyFileRoute } from "@tanstack/react-router"
 import { productsQueryOptions } from "../../lib/products"
 import type { ProductType } from "../../lib/types"
 import { Product } from "../../components/product"
+import SearchInput from "./-search-input"
 
 export const Route = createLazyFileRoute("/products3/")({
 	component: RouteComponent,
@@ -10,6 +11,8 @@ export const Route = createLazyFileRoute("/products3/")({
 
 function RouteComponent() {
 	const products = useSuspenseQuery(productsQueryOptions).data
+	const { q } = Route.useSearch()
+	const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(q?.toLowerCase() || ""))
 
 	return (
 		<article className="flex-1 w-full p-10 ">
@@ -19,10 +22,13 @@ function RouteComponent() {
 				ruta hasta que tenga los datos. Es necesario crear un pendingComponent a
 				modo de skelton.
 			</p>
-			<span className="text-2xl font-bold mb-4">PRODUCTS PAGE</span>
+			<div className="flex items-enter justify-between">
+				<span className="text-2xl font-bold mb-4">PRODUCTS PAGE</span>
+				<SearchInput />
+			</div>
 
 			<div className="flex flex-wrap gap-4 my-10">
-				{products.map((product: ProductType) => (
+				{filteredProducts.map((product: ProductType) => (
 					<Product key={product.id} product={product} />
 				))}
 			</div>

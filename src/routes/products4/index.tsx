@@ -4,8 +4,15 @@ import type { ProductType } from "../../lib/types"
 import { Product } from "../../components/product"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ProductsSkeleton } from "../../components/product-skelton"
+import { z } from "zod"
+import SearchInput from "./-search-input"
+
+const SearchShema = z.object({
+	q: z.string().optional(),
+})
 
 export const Route = createFileRoute("/products4/")({
+	validateSearch: search => SearchShema.parse(search),
 	loader: ({ context: { queryClient } }) =>
 		queryClient.ensureQueryData(productsQueryOptions),
 	component: RouteComponent,
@@ -13,12 +20,13 @@ export const Route = createFileRoute("/products4/")({
 })
 
 function RouteComponent() {
-	const productsQuery = useSuspenseQuery(productsQueryOptions)
-	const products = productsQuery.data
+	const products = useSuspenseQuery(productsQueryOptions).data
+	const { q } = Route.useSearch()
+	const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(q?.toLowerCase() || ""))
 	return (
 		<ComponentContainer>
 			<div className="flex flex-wrap gap-4 my-10">
-				{products.map((product: ProductType) => (
+				{filteredProducts.map((product: ProductType) => (
 					<Product key={product.id} product={product} />
 				))}
 			</div>
@@ -42,7 +50,10 @@ const ComponentContainer = ({ children }: { children?: React.ReactNode }) => {
 				para el RouteComponent como para el PendingComponent, ya que la pagina
 				esta bloqueada hasta que se carguen los datos.
 			</p>
-			<span className="text-2xl font-bold mb-4">PRODUCTS PAGE</span>
+			<div className="flex items-enter justify-between">
+				<span className="text-2xl font-bold mb-4">PRODUCTS PAGE</span>
+				<SearchInput />
+			</div>
 
 			{children}
 		</article>
