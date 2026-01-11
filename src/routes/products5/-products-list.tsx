@@ -12,7 +12,7 @@ export default function ProductsList() {
 			{products.map((product: ProductType) => (
 				<Link
 					key={product.id}
-					to="/products4/$productId"
+					to="/products5/$productId"
 					params={{ productId: String(product.id) }}
 				>
 					<Product product={product} />

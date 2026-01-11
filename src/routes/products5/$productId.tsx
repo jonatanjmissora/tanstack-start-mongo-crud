@@ -15,7 +15,7 @@ function RouteComponent() {
 	const product = products?.find(p => String(p.id) === productId)
 	return (
 		<article className="w-full flex-1 flex items-center p-10 flex-col gap-4">
-			<Link to="/products4" className="underline mr-auto text-lg font-semibold">
+			<Link to="/products5" className="underline mr-auto text-lg font-semibold">
 				Volver
 			</Link>
 			<div className="w-1/2 h-max">
