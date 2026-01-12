@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from "@tanstack/react-query"
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import type { ProductType } from "./types"
 import { delay } from "./utils"
 
@@ -27,8 +27,21 @@ export const productQueryOptions = (productId: string) =>
 		queryFn: () => getProduct(productId),
 	})
 
-export const useFilteredProducts = (q?: string) => {
+export const useQueryFilteredProducts = (q?: string) => {
 	return useQuery({
+		...productsQueryOptions,
+		select: products => {
+			if (!q) return products
+
+			const normalized = q.toLowerCase()
+
+			return products.filter(p => p.title.toLowerCase().includes(normalized))
+		},
+	})
+}
+
+export const useSuspenseFilteredProducts = (q?: string) => {
+	return useSuspenseQuery({
 		...productsQueryOptions,
 		select: products => {
 			if (!q) return products

@@ -1,6 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { createLazyFileRoute } from "@tanstack/react-router"
-import { productsQueryOptions } from "../../lib/products"
+import { useSuspenseFilteredProducts } from "../../lib/products"
 import type { ProductType } from "../../lib/types"
 import { Product } from "../../components/product"
 import SearchInput from "./-search-input"
@@ -10,9 +9,8 @@ export const Route = createLazyFileRoute("/products3/")({
 })
 
 function RouteComponent() {
-	const products = useSuspenseQuery(productsQueryOptions).data
 	const { q } = Route.useSearch()
-	const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(q?.toLowerCase() || ""))
+	const products = useSuspenseFilteredProducts(q).data
 
 	return (
 		<article className="flex-1 w-full p-10 ">
@@ -28,7 +26,7 @@ function RouteComponent() {
 			</div>
 
 			<div className="flex flex-wrap gap-4 my-10">
-				{filteredProducts.map((product: ProductType) => (
+				{products.map((product: ProductType) => (
 					<Product key={product.id} product={product} />
 				))}
 			</div>

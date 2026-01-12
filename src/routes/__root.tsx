@@ -31,16 +31,13 @@ function RootComponent() {
 					Products2
 				</Link>
 				<Link activeProps={{ className: "text-blue-500" }} to="/products3">
-					prefetch3
+					Products3
 				</Link>
 				<Link activeProps={{ className: "text-blue-500" }} to="/products4">
-					prefetch4
+					Products4
 				</Link>
 				<Link activeProps={{ className: "text-blue-500" }} to="/products5">
-					Products5
-				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products6">
-					prefch6
+					Products5 ✅
 				</Link>
 			</header>
 			<Outlet />

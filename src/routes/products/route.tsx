@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
-import { useFilteredProducts } from "../../lib/products"
+import { useQueryFilteredProducts } from "../../lib/products"
 import SearchInput from "../../components/search-input"
 import { z } from "zod"
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/products")({
 
 function RouteComponent() {
 	const { q } = Route.useSearch()
-	const { data: products, isLoading } = useFilteredProducts(q)
+	const { data: products, isLoading } = useQueryFilteredProducts(q)
 
 	return (
 		<article className="w-full flex-1 flex">

@@ -88,108 +88,124 @@ function RootComponent() {
   )
 }
 
-9 - creo lib/products.ts (hooks y queries)
+9 - creo src/routes/products.ts ( con sus hooks y queries incluidos)
 ====================
+
+// API FETCH
 export const getProducts = async () => {
+	// await delay()
 	const response = await fetch("https://fakestoreapi.com/products")
 	const data = await response.json()
 	return data as ProductType[]
 }
 
-export const getProduct = async (productId: string) => {
-	const response = await fetch(`https://fakestoreapi.com/products/${productId}`)
-	const data = await response.json()
-	return data as ProductType
-}
-
+//	QUERY
 export const productsQueryOptions = queryOptions({
 	queryKey: ["products"],
 	queryFn: () => getProducts(),
 })
 
-export const productQueryOptions = (productId: string) =>
-	queryOptions({
-		queryKey: ['product', { productId }],
-		queryFn: () => getProduct(productId),
-	})
-	
+//	HOOK
 export const useFilteredProducts = (q?: string) => {
-	return useQuery({
-    ...productsQueryOptions,
-    select: (products) => {
-      if (!q) return products
+	return useSuspenseQuery({
+		...productsQueryOptions,
+		select: products => {
+			if (!q) return products
 
-      const normalized = q.toLowerCase()
+			const normalized = q.toLowerCase()
 
-      return products.filter((p) =>
-        p.title.toLowerCase().includes(normalized)
-      )
-    },
-  })
+			return products.filter(p => p.title.toLowerCase().includes(normalized))
+		},
+	})
 }
 
-10 - creo src/routes/products/index.tsx
-====================
-export const Route = createFileRoute("/products")({
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(productsQueryOptions),
-	...
+//  SCHEMA para q
+const SearchShema = z.object({
+	q: z.string().optional(),
 })
 
-function ProductsPage() {
-    const { q } = Route.useSearch()
-    const { data: products, isLoading } = useFilteredProducts(q)
+export const Route = createFileRoute("/products6/")({
+	component: RouteComponent,
+	validateSearch: search => SearchShema.parse(search),
+	loader: async ({ context }) => {
+		context.queryClient.ensureQueryData(productsQueryOptions)
+	},
+})
 
-  if (isLoading) return <div>Cargando...</div>
+function RouteComponent() {
+	const { q } = Route.useSearch()
+	return (
+		<article className="flex-1 w-full p-10 ">
+			<p>
+				Aqui utilizamos el {"<"}Suspense{">"}, y solo en ProductsList se hace
+				uso del useSuspenseQuery.
+			</p>
+			<div className="flex items-enter justify-between">
+				<span className="text-2xl font-bold mb-4">PRODUCTS PAGE</span>
+				<SearchInput />
+			</div>
 
-  return (
-	...
-	<SearchInput />
-	...
-	<ul className="flex flex-col gap-2">
-					{products?.map(p => (
-						<Link
-							key={p.id}
-							to={`/products/$productId`}
-							params={{ productId: String(p.id) }}
-							className="truncate"
-						>
-							{p.title}
-						</Link>
-					))}
-				</ul>
-	...
+			<Suspense
+				fallback={<ProductsSkeleton from={"SUSPENSE + useSuspenseQuery"} />}
+			>
+				<ProductsList q={q} />
+			</Suspense>
+		</article>
+	)
+}
+
+export default function ProductsList({ q }: { q?: string }) {
+	const products = useFilteredProducts(q).data
+
+	return (
+		<div className="flex flex-wrap gap-4 my-10">
+			{products.map((product: ProductType) => (
+				<Link
+					key={product.id}
+					to="/products6/$productId"
+					params={{ productId: String(product.id) }}
+					search={{ q }}
+				>
+					<Product product={product} />
+				</Link>
+			))}
+		</div>
 	)
 }
 
 11 - creo src/components/search-input.tsx
 ====================
 function SearchInput() {
-  const navigate = useNavigate({ from: "/products" })
-  const search = useSearch({ from: "/products" })
+  const navigate = useNavigate({ from: "/products6" })
+    const search = useSearch({ from: "/products6/" })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const q = e.target.value.trim() === "" ? undefined : e.target.value
-    navigate({
-      to: "/products",
-      replace: true,
-      search: (prev) => ({ ...prev, q }),
-    })
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const q = e.target.value.trim() === "" ? undefined : e.target.value
+        navigate({
+            replace: true,
+            search: prev => ({ ...prev, q }),
+        })
+    }
+
+    return (
+        <div className="flex gap-2 items-center">
+            <input
+                value={search.q ?? ""}
+                onChange={handleChange}
+                placeholder="Buscar productos..."
+                className="max-w-md w-full rounded border border-slate-300 px-3 py-2"
+            />
+            <button
+                className="button"
+                onClick={() => navigate({ replace: true, search: { q: undefined } })}
+            >
+                Clear
+            </button>
+        </div>
+		)
   }
 
-  return (
-	<div className="flex gap-2 items-center">
-        <input
-        value={search.q ?? ""}
-        onChange={handleChange}
-        placeholder="Buscar productos..."
-        className="max-w-md w-full rounded border border-slate-300 px-3 py-2"
-        />
-        <button className="button" onClick={() => navigate({ to: "/products", replace: true, search: { q: undefined } })}>Clear</button>
-    </div>
-  )
-}
-
+ 
 12 - creo src/routes/products/$productId.tsx
 ====================
 function RouteComponent() {

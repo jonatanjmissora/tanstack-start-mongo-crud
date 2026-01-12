@@ -14,8 +14,8 @@ export const Route = createFileRoute("/products5/")({
 	component: RouteComponent,
 	validateSearch: search => SearchShema.parse(search),
 	loader: async ({ context }) => {
-		context.queryClient.ensureQueryData(productsQueryOptions);
-	  },
+		context.queryClient.ensureQueryData(productsQueryOptions)
+	},
 })
 
 function RouteComponent() {
