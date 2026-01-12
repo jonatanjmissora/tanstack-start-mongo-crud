@@ -4,6 +4,7 @@ import ProductsList from "./-products-list"
 import { ProductsSkeleton } from "../../components/product-skelton"
 import SearchInput from "./-search-input"
 import { z } from "zod"
+import { productsQueryOptions } from "../../lib/products"
 
 const SearchShema = z.object({
 	q: z.string().optional(),
@@ -12,6 +13,9 @@ const SearchShema = z.object({
 export const Route = createFileRoute("/products5/")({
 	component: RouteComponent,
 	validateSearch: search => SearchShema.parse(search),
+	loader: async ({ context }) => {
+		context.queryClient.ensureQueryData(productsQueryOptions);
+	  },
 })
 
 function RouteComponent() {
