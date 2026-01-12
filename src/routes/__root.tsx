@@ -21,26 +21,52 @@ function RootComponent() {
 	return (
 		<section className="flex flex-col w-screen min-h-screen overflow-x-hidden bg-blue-950">
 			<header className="py-4 mx-auto w-full flex justify-center gap-16 bg-blue-900">
-				<Link activeProps={{ className: "text-blue-500" }} to="/">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Home
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/products"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Products
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products2">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/products2"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Products2
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products3">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/products3"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Products3
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products4">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/products4"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Products4
 				</Link>
-				<Link activeProps={{ className: "text-blue-500" }} to="/products5">
+				<Link
+					activeProps={{ className: "text-blue-500" }}
+					to="/products5"
+					viewTransition={{ types: ["fade-in"] }}
+				>
 					Products5 ✅
 				</Link>
 			</header>
-			<Outlet />
+			<div className="flex-1 [view-transition-name:main-content]">
+				<Outlet />
+			</div>
 			<TanStackRouterDevtools />
 			<ReactQueryDevtools />
 		</section>
